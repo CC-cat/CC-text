@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+
+   <head>
+      <meta charset="utf-8">
+      <title></title>
+      <script src="http://code.jquery.com/jquery.js"></script>
+   </head>
+
+   <body>
+      <!--
+      样例：
+         count([1, 2, "34", 56]);
+
+         {
+           "number": 3,
+           "string": 1
+         }
+
+         count([1, [2, 3, [4, 5]]]);
+
+         {
+           "number": 5
+         }
+
+         count([1, [true, "2"], false, ["45", [67]]]);
+
+         {
+           "number": 2,
+           "boolean": 2,
+           "string": 2
+         }
+
+      -->
+      <script type="text/javascript">
+         // 练习题地址：https://hackmd.io/s/BJBs_r6hl
+
+         $(function() {
+            count([1, 2, "34", 56]);
+            // count([1, [2, 3, [4, 5]]]);
+            // count([1, [true, "2"], false, ["45", [67]]]);
+         });
+
+         var newCount = new Object();
+         var oNumber = 0;
+         var oString = 0;
+         var oBoolean = 0;
+
+
+         var count = function(...arr) {
+            // 遍历对象
+            for (var i = 0; i < arr[0].length; i++) {
+               // console.log("遍历对象" + i + ":" + arr[0][i]);
+
+               let _arr = arr[0][i];
+
+               // 判断 number
+               if ($.type(_arr) == 'number') {
+                  oNumber++;
+                  if (oNumber > 0) {
+                     newCount.number = oNumber;
+                  }
+               }
+
+               // 判断 string
+               if ($.type(_arr) == 'string') {
+                  oString++;
+
+                  if (oString > 0) {
+                     newCount.string = oString;
+                  }
+               }
+
+               // 判断 array
+               if ($.type(_arr) == 'array') {
+                  count(_arr);
+               }
+
+               // 判断 boolean
+               if ($.type(_arr) == 'boolean') {
+                  oBoolean++;
+
+                  if (oBoolean > 0) {
+                     newCount.boolean = oBoolean;
+                  }
+               }
+
+            };
+
+
+
+
+            // 赋值输出显示类型
+            console.log(newCount);
+
+
+         };
+
+      </script>
+   </body>
+
+</html>

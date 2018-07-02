@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+
+   <head>
+      <meta charset="utf-8">
+      <title></title>
+      <script src="http://code.jquery.com/jquery.js"></script>
+   </head>
+
+   <body>
+
+      <!--
+      样例：
+         isIPv4('166.111.4.100') // true
+         isIPv4('166.111.4.001') // false
+         isIPv4('166.111.4.666') // false
+         isIPv4('166.111.4.0x1') // false
+         isIPv4('166,111,4,100') // false
+
+      解题思路：
+         IPV4地址由4个组数字组成，每组数字之间以.分隔，每组数字的取值范围是0-255。
+
+         IPV4必须满足以下四条规则：
+
+         1、任何一个1位或2位数字，即0-99；
+
+         2、任何一个以1开头的3位数字，即100-199；
+
+         3、任何一个以2开头、第2位数字是0-4之间的3位数字，即200-249；
+
+         4、任何一个以25开头，第3位数字在0-5之间的3位数字，即250-255。
+
+
+         ### 这样把规则全部罗列出来之后，构造一个正则表达式的思路就清晰了。###
+
+         首先满足第一条规则的正则是：\d{1,2}
+
+         首先满足第二条规则的正则是：1\d{2}
+
+         首先满足第三条规则的正则是：2[0-4]\d
+
+         首先满足第四条规则的正则是：25[0-5]
+
+
+         使用边界匹配，不然256.1.1.1也会匹配成功，会匹配成56.1.1.1，那么最终正确的匹配IPv4的正则表达式为：
+         (?=(\b|\D))(((\d{1,2})|(1\d{1,2})|(2[0-4]\d)|(25[0-5]))\.){3}((\d{1,2})|(1\d{1,2})|(2[0-4]\d)|(25[0-5]))(?=(\b|\D))
+
+         支持IPv6基本格式的正则表达式：
+
+         ^([\\da-fA-F]{1,4}:){7}([\\da-fA-F]{1,4})$
+      -->
+
+      <script type="text/javascript">
+         // 练习题地址：https://hackmd.io/s/BJBs_r6hl
+         $(function() {
+
+            console.log(isIPv4('56.1.1.1')); // true
+            // console.log(isIPv4('166.111.4.001')); // false
+            // console.log(isIPv4('166.111.4.666')); // false
+            // console.log(isIPv4('166.111.4.0x1')); // false
+            // console.log(isIPv4('166,111,4,100')); // false
+         });
+
+         var isIPv4 = function(IP) {
+
+            //按"."进行分割
+            var parts = IP.split(".");
+
+            //正则验证是否有指定字符以外的字符存在
+            var reg1 = /^(?=(\b|\D))(((\d{1,2})|(1\d{1,2})|(2[0-4]\d)|(25[0-5]))\.){3}((\d{1,2})|(1\d{1,2})|(2[0-4]\d)|(25[0-5]))(?=(\b|\D))$/;
+
+
+
+            //IPv4由4个部分组成
+            if (parts.length === 4) {
+               for (var i = 0; i < parts.length; i++) {
+                  var cur = parts[i];
+                  //空字符串或当前部分不是数字
+                  //那么肯定不合法
+                  if (!cur || isNaN(cur)) {
+                     console.log(false);
+                     return "Neither";
+                  }
+                  //转化为数字
+                  var num = +cur;
+
+                  //如果包含非法字符
+                  if (reg1.test(cur)) {
+                     console.log(false);
+                     return "Neither";
+                  }
+
+                  //合法范围应该在0-255之间
+                  if (num < 0 || num > 255) {
+                     console.log(false);
+                     return "Neither";
+                  }
+
+                  //排除"172.016.254.01"这样以0开头的不合法情况
+                  if (num + "" !== cur) {
+                     console.log(false);
+                     return "Neither";
+                  }
+               }
+               console.log(true);
+               return "IPv4";
+
+            }
+
+            //合法的IPv6像这样：
+            //"2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+            //以":"来分割
+            parts = IP.split(":");
+
+            //正则验证是否有指定字符以外的字符存在
+            var reg = /[^0123456789abcdefABCDEF]/;
+
+            //IPv6由8个部分组成
+            if (parts.length === 8) {
+               for (i = 0; i < parts.length; i++) {
+                  var cur = parts[i];
+
+                  //如果是空字符串或者当前部分长度超标
+                  if (!cur || cur.length > 4) {
+                     console.log(false);
+                     return "Neither";
+                  }
+
+                  //如果包含非法字符
+                  if (reg.test(cur)) {
+                     console.log(false);
+                     return "Neither";
+                  }
+               }
+
+               console.log(true);
+               return "IPv6";
+            }
+
+            //不是合法的IP地址
+            console.log(false);
+            return "Neither";
+         };
+
+      </script>
+   </body>
+
+</html>
